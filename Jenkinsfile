@@ -5,6 +5,9 @@ pipeline {
     }
     environment {
         def appVersion = ""
+        acc_id = "995310840186"
+        project = "roboshop"
+        component = "catalogue"
     } 
     options {
         disableConcurrentBuilds()
@@ -46,9 +49,10 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    sh """
-                        docker build -t catalogue:${appVersion} .
-                    """
+                    withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${acc_id}.dkr.ecr.us-east-1.amazonaws.com
+                        docker build -t ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion} . 
+                        docker push ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion} 
                 }
             }
         }
