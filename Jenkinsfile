@@ -33,21 +33,21 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
                 script {
                     sh """
-                        echo "Building ${appVersion}"
+                        npm install
                         
                     """
                 }
             }
         }
-        stage('Test') {
+        stage('Docker Build') {
             steps {
                 script {
                     sh """
-                        echo "Testing"
+                        docker build -t catalogue:${appVersion} .
                     """
                 }
             }
